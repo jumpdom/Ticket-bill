@@ -3,88 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amit Travels - Invoice Generator</title>
+    <title>Amit Travels - Official Invoice</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 20px; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #333; }
+        .invoice-container { max-width: 600px; margin: auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.1); border: 2px solid #0b2545; }
+        .header { text-align: center; }
+        .logo-img { max-width: 140px; display: block; margin: 0 auto 5px auto; }
+        .tagline { font-size: 13px; color: #555; margin: 0; font-style: italic; }
+        .secure-badge { background-color: #e2f0d9; color: #385723; padding: 5px 10px; font-size: 12px; font-weight: bold; display: inline-block; border-radius: 4px; margin-top: 8px; }
+        .details-section, .table-section { margin-top: 20px; width: 100%; border-collapse: collapse; }
+        .details-section td { padding: 6px 0; font-size: 14px; }
+        .table-section th, .table-section td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 14px; }
+        .table-section th { background-color: #0b2545; color: white; }
+        .text-right { text-align: right; }
+        .signature-section { margin-top: 40px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .signature-box { text-align: right; width: 200px; }
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input[type="file"], input[type="number"], input[type="text"] { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-        .invoice-box { border: 2px solid #0b2545; padding: 20px; margin-top: 20px; display: none; background: #fff; }
-        .logo-img { max-width: 150px; display: block; margin: 0 auto 10px auto; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+        input { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        .input-form { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
         button { background-color: #0b2545; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 10px; }
         button:hover { background-color: #153e75; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>Amit Travels Invoice Generator</h2>
-    
+<!-- INPUT FORM SECTION -->
+<div class="input-form">
+    <h2>Amit Travels Invoice Creator</h2>
     <div class="form-group">
-        <label>Upload Ticket Image:</label>
-        <input type="file" id="imageInput" accept="image/*">
+        <label>Billing Date:</label>
+        <input type="date" id="billDate">
     </div>
-    
     <div class="form-group">
         <label>Customer Name:</label>
-        <input type="text" id="customerName" placeholder="Enter customer name">
+        <input type="text" id="custName" placeholder="Enter customer name">
     </div>
-
     <div class="form-group">
-        <label>Final Amount (₹):</label>
-        <input type="number" id="finalAmount" placeholder="Enter total amount">
+        <label>Mobile Number:</label>
+        <input type="text" id="custMobile" placeholder="Enter mobile number">
+    </div>
+    <div class="form-group">
+        <label>Ticket Price (₹):</label>
+        <input type="number" id="ticketPrice" placeholder="Enter original/base ticket price" oninput="calculateTotal()">
+    </div>
+    <div class="form-group">
+        <label>Service Fee / Markup (₹):</label>
+        <input type="number" id="serviceFee" placeholder="Enter your service charge" oninput="calculateTotal()">
+    </div>
+    <div class="form-group">
+        <label>Total Amount (₹):</label>
+        <input type="number" id="totalFee" readonly style="background-color: #e9ecef; font-weight: bold;">
+    </div>
+    <button onclick="generatePDF()">Generate & Download PDF Bill</button>
+</div>
+
+<!-- PRINTABLE INVOICE TEMPLATE -->
+<div id="invoiceContent" class="invoice-container" style="display:none;">
+    <div class="header">
+        <img src="https://i.postimg.cc/nVjvWYVQ/5CE560C2-E873-4D33-A158-D3D3A449753B.png" alt="Amit Travels Logo" class="logo-img">
+        <h2 style="margin: 5px 0; color: #0b2545;">AMIT TRAVELS</h2>
+        <p class="tagline">Travel More, Live More</p>
+        <div><span class="secure-badge">100% Safe & Secure Booking</span></div>
     </div>
 
-    <button onclick="generateInvoice()">Generate & Download PDF</button>
+    <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;">
 
-    <div id="invoiceContent" class="invoice-box">
-        <!-- Logo Link -->
-        <img src="https://i.postimg.cc/nVjvWYVQ/5CE560C2-E873-4D33-A158-D3D3A449753B.png" alt="Amit Travels Logo" class="logo-img">
-        <h3 style="text-align:center; margin: 5px 0; color: #0b2545;">AMIT TRAVELS</h3>
-        <p style="text-align:center; font-size: 12px; color: #555; margin-top:0;">Travel More, Live More</p>
-        <hr>
-        <p><strong>Customer Name:</strong> <span id="displayCustomer"></span></p>
-        <div id="imageDisplayArea" style="text-align:center; margin: 15px 0;"></div>
-        <hr>
-        <p style="font-size: 18px; text-align: right;"><strong>Total Amount: ₹ <span id="displayAmount"></span></strong></p>
-        <p style="text-align:center; margin-top: 20px; font-size: 14px;"><em>Thank you for booking with Amit Travels! Have a safe journey.</em></p>
+    <table class="details-section">
+        <tr>
+            <td><strong>Billing Date:</strong> <span id="dispDate"></span></td>
+            <td class="text-right"><strong>Mobile No:</strong> <span id="dispMobile"></span></td>
+        </tr>
+        <tr>
+            <td colspan="2"><strong>Customer Name:</strong> <span id="dispName"></span></td>
+        </tr>
+    </table>
+
+    <table class="table-section">
+        <tr>
+            <th>Description</th>
+            <th class="text-right">Amount (₹)</th>
+        </tr>
+        <tr>
+            <td>Travel Ticket Booking Fare</td>
+            <td class="text-right">₹ <span id="dispTicketPrice"></span></td>
+        </tr>
+        <tr>
+            <td>Agency Service Fee / Charges</td>
+            <td class="text-right">₹ <span id="dispServiceFee"></span></td>
+        </tr>
+        <tr style="font-weight: bold; background-color: #f8f9fa;">
+            <td>Total Payable Amount</td>
+            <td class="text-right">₹ <span id="dispTotalFee"></span></td>
+        </tr>
+    </table>
+
+    <div class="signature-section">
+        <div>
+            <p style="font-size: 12px; color: #666; margin: 0;">Thank you for choosing Amit Travels!</p>
+            <p style="font-size: 12px; color: #666; margin: 5px 0 0 0;">Have a safe and happy journey.</p>
+        </div>
+        <div class="signature-box">
+            <div style="border-bottom: 1px solid #333; height: 35px; margin-bottom: 5px;"></div>
+            <p style="margin: 0; font-size: 13px; font-weight: bold;">Authorized Signature</p>
+            <p style="margin: 2px 0 0 0; font-size: 11px; color: #555;">Amit Travels</p>
+        </div>
     </div>
 </div>
 
 <script>
-    function generateInvoice() {
-        const file = document.getElementById('imageInput').files[0];
-        const name = document.getElementById('customerName').value;
-        const amount = document.getElementById('finalAmount').value;
+    // Auto calculate total amount
+    function calculateTotal() {
+        let tPrice = parseFloat(document.getElementById('ticketPrice').value) || 0;
+        let sFee = parseFloat(document.getElementById('serviceFee').value) || 0;
+        document.getElementById('totalFee').value = tPrice + sFee;
+    }
 
-        if (!file || !name || !amount) {
-            alert("Please fill all details and upload a ticket image.");
+    function generatePDF() {
+        let date = document.getElementById('billDate').value;
+        let name = document.getElementById('custName').value;
+        let mobile = document.getElementById('custMobile').value;
+        let tPrice = document.getElementById('ticketPrice').value;
+        let sFee = document.getElementById('serviceFee').value;
+        let total = document.getElementById('totalFee').value;
+
+        if(!date || !name || !mobile || !tPrice || !sFee) {
+            alert("Kripya sabhi fields (Date, Name, Mobile, Prices) sahi se bharein!");
             return;
         }
 
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('imageDisplayArea').innerHTML = `<img src="${e.target.result}" style="max-width:100%; border: 1px solid #ccc; border-radius: 4px;">`;
-            document.getElementById('displayCustomer').innerText = name;
-            document.getElementById('displayAmount').innerText = amount;
-            
-            const element = document.getElementById('invoiceContent');
-            element.style.display = 'block';
-            
-            const opt = {
-                margin: 0.5,
-                filename: 'Amit_Travels_Invoice.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-            };
-            
-            html2pdf().set(opt).from(element).save();
-        }
-        reader.readAsDataURL(file);
+        // Assign values to invoice view
+        document.getElementById('dispDate').innerText = date;
+        document.getElementById('dispName').innerText = name;
+        document.getElementById('dispMobile').innerText = mobile;
+        document.getElementById('dispTicketPrice').innerText = tPrice;
+        document.getElementById('dispServiceFee').innerText = sFee;
+        document.getElementById('dispTotalFee').innerText = total;
+
+        let element = document.getElementById('invoiceContent');
+        element.style.display = 'block';
+
+        let opt = {
+            margin:       0.5,
+            filename:     'Amit_Travels_Bill.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            element.style.display = 'none';
+        });
     }
 </script>
 
