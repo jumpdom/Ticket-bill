@@ -7,22 +7,29 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 20px; }
-        .invoice-container { max-width: 600px; margin: auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.1); border: 2px solid #0b2545; }
+        .invoice-container { max-width: 650px; margin: auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.1); border: 2px solid #0b2545; }
         .header { text-align: center; }
         .logo-img { max-width: 140px; display: block; margin: 0 auto 5px auto; }
         .tagline { font-size: 13px; color: #555; margin: 0; font-style: italic; }
         .secure-badge { background-color: #e2f0d9; color: #385723; padding: 5px 10px; font-size: 12px; font-weight: bold; display: inline-block; border-radius: 4px; margin-top: 8px; }
-        .details-section, .table-section { margin-top: 20px; width: 100%; border-collapse: collapse; }
+        .details-section, .table-section { margin-top: 15px; width: 100%; border-collapse: collapse; }
         .details-section td { padding: 6px 0; font-size: 14px; }
         .table-section th, .table-section td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 14px; }
         .table-section th { background-color: #0b2545; color: white; }
         .text-right { text-align: right; }
-        .signature-section { margin-top: 40px; display: flex; justify-content: space-between; align-items: flex-end; }
-        .signature-box { text-align: right; width: 200px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+        
+        .terms-section { margin-top: 20px; font-size: 11px; color: #444; background: #f9f9f9; padding: 10px; border-radius: 4px; border: 1px dashed #ccc; }
+        .terms-section h4 { margin: 0 0 5px 0; color: #0b2545; font-size: 12px; }
+        .terms-section ul { margin: 0; padding-left: 15px; }
+
+        .signature-container { margin-top: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .signature-box { text-align: center; width: 200px; }
+        .sig-line { border-bottom: 1px solid #333; height: 35px; margin-bottom: 5px; }
+
+        .form-group { margin-bottom: 12px; }
+        label { display: block; margin-bottom: 4px; font-weight: bold; font-size: 13px; }
         input { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-        .input-form { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .input-form { max-width: 650px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
         button { background-color: #0b2545; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 10px; }
         button:hover { background-color: #153e75; }
     </style>
@@ -45,12 +52,16 @@
         <input type="text" id="custMobile" placeholder="Enter mobile number">
     </div>
     <div class="form-group">
+        <label>PNR Number:</label>
+        <input type="text" id="pnrNumber" placeholder="Enter PNR or Booking ID">
+    </div>
+    <div class="form-group">
         <label>Ticket Price (₹):</label>
-        <input type="number" id="ticketPrice" placeholder="Enter original/base ticket price" oninput="calculateTotal()">
+        <input type="number" id="ticketPrice" placeholder="Enter ticket price" oninput="calculateTotal()">
     </div>
     <div class="form-group">
         <label>Service Fee / Markup (₹):</label>
-        <input type="number" id="serviceFee" placeholder="Enter your service charge" oninput="calculateTotal()">
+        <input type="number" id="serviceFee" placeholder="Enter service fee" oninput="calculateTotal()">
     </div>
     <div class="form-group">
         <label>Total Amount (₹):</label>
@@ -68,7 +79,7 @@
         <div><span class="secure-badge">100% Safe & Secure Booking</span></div>
     </div>
 
-    <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;">
+    <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
 
     <table class="details-section">
         <tr>
@@ -76,7 +87,8 @@
             <td class="text-right"><strong>Mobile No:</strong> <span id="dispMobile"></span></td>
         </tr>
         <tr>
-            <td colspan="2"><strong>Customer Name:</strong> <span id="dispName"></span></td>
+            <td><strong>Customer Name:</strong> <span id="dispName"></span></td>
+            <td class="text-right"><strong>PNR / Booking ID:</strong> <span id="dispPnr"></span></td>
         </tr>
     </table>
 
@@ -99,21 +111,30 @@
         </tr>
     </table>
 
-    <div class="signature-section">
-        <div>
-            <p style="font-size: 12px; color: #666; margin: 0;">Thank you for choosing Amit Travels!</p>
-            <p style="font-size: 12px; color: #666; margin: 5px 0 0 0;">Have a safe and happy journey.</p>
+    <!-- TERMS AND CONDITIONS -->
+    <div class="terms-section">
+        <h4>Terms & Conditions:</h4>
+        <ul>
+            <li>No cash refunds will be provided in case of ticket cancellation.</li>
+            <li>Instead of a cash refund, the amount can be adjusted towards booking a new ticket, paying utility bills (electricity), or mobile recharges through Amit Travels.</li>
+        </ul>
+    </div>
+
+    <!-- SIGNATURE SECTION -->
+    <div class="signature-container">
+        <div class="signature-box">
+            <div class="sig-line"></div>
+            <p style="margin: 0; font-size: 12px; font-weight: bold;">Customer Signature</p>
         </div>
         <div class="signature-box">
-            <div style="border-bottom: 1px solid #333; height: 35px; margin-bottom: 5px;"></div>
-            <p style="margin: 0; font-size: 13px; font-weight: bold;">Authorized Signature</p>
-            <p style="margin: 2px 0 0 0; font-size: 11px; color: #555;">Amit Travels</p>
+            <div class="sig-line"></div>
+            <p style="margin: 0; font-size: 12px; font-weight: bold;">Authorized Signature</p>
+            <p style="margin: 2px 0 0 0; font-size: 10px; color: #555;">Amit Travels</p>
         </div>
     </div>
 </div>
 
 <script>
-    // Auto calculate total amount
     function calculateTotal() {
         let tPrice = parseFloat(document.getElementById('ticketPrice').value) || 0;
         let sFee = parseFloat(document.getElementById('serviceFee').value) || 0;
@@ -124,19 +145,20 @@
         let date = document.getElementById('billDate').value;
         let name = document.getElementById('custName').value;
         let mobile = document.getElementById('custMobile').value;
+        let pnr = document.getElementById('pnrNumber').value;
         let tPrice = document.getElementById('ticketPrice').value;
         let sFee = document.getElementById('serviceFee').value;
         let total = document.getElementById('totalFee').value;
 
-        if(!date || !name || !mobile || !tPrice || !sFee) {
-            alert("Kripya sabhi fields (Date, Name, Mobile, Prices) sahi se bharein!");
+        if(!date || !name || !mobile || !pnr || !tPrice || !sFee) {
+            alert("Please fill all the details (Date, Name, Mobile, PNR, and Prices) properly!");
             return;
         }
 
-        // Assign values to invoice view
         document.getElementById('dispDate').innerText = date;
         document.getElementById('dispName').innerText = name;
         document.getElementById('dispMobile').innerText = mobile;
+        document.getElementById('dispPnr').innerText = pnr;
         document.getElementById('dispTicketPrice').innerText = tPrice;
         document.getElementById('dispServiceFee').innerText = sFee;
         document.getElementById('dispTotalFee').innerText = total;
@@ -146,7 +168,7 @@
 
         let opt = {
             margin:       0.5,
-            filename:     'Amit_Travels_Bill.pdf',
+            filename:     'Amit_Travels_Invoice.pdf',
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2 },
             jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
