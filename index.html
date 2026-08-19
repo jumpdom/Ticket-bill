@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amit Travels - Invoice Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 20px; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; }
+        input[type="file"], input[type="number"], input[type="text"] { width: 100%; padding: 8px; box-sizing: border-box; }
+        .invoice-box { border: 2px solid #0b2545; padding: 20px; margin-top: 20px; display: none; background: #fff; }
+        .logo-img { max-width: 120px; display: block; margin: 0 auto 10px auto; }
+        button { background-color: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px; }
+        button:hover { background-color: #218838; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Amit Travels Invoice Generator</h2>
+    
+    <div class="form-group">
+        <label>Upload Cropped Ticket Image:</label>
+        <input type="file" id="imageInput" accept="image/*">
+    </div>
+    
+    <div class="form-group">
+        <label>Customer Name:</label>
+        <input type="text" id="customerName" placeholder="Enter customer name">
+    </div>
+
+    <div class="form-group">
+        <label>Final Amount (₹):</label>
+        <input type="number" id="finalAmount" placeholder="Enter total amount">
+    </div>
+
+    <button onclick="generateInvoice()">Create Invoice & Download PDF</button>
+
+    <div id="invoiceContent" class="invoice-box">
+        <!-- Aapka asli logo yahan automatically lag jayega -->
+        <img src="image.png" alt="Amit Travels Logo" class="logo-img">
+        <h3 style="text-align:center; margin: 5px 0; color: #0b2545;">AMIT TRAVELS</h3>
+        <p style="text-align:center; font-size: 12px; color: #555; margin-top:0;">Travel More, Live More</p>
+        <hr>
+        <p><strong>Customer Name:</strong> <span id="displayCustomer"></span></p>
+        <div id="imageDisplayArea" style="text-align:center; margin: 15px 0;"></div>
+        <hr>
+        <p style="font-size: 18px; text-align: right;"><strong>Total Amount: ₹ <span id="displayAmount"></span></strong></p>
+        <p style="text-align:center; margin-top: 20px; font-size: 14px;"><em>Thank you for booking with Amit Travels! Have a safe journey.</em></p>
+    </div>
+</div>
+
+<script>
+    function generateInvoice() {
+        const file = document.getElementById('imageInput').files[0];
+        const name = document.getElementById('customerName').value;
+        const amount = document.getElementById('finalAmount').value;
+
+        if (!file || !name || !amount) {
+            alert("Please fill all details and upload a ticket image.");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('imageDisplayArea').innerHTML = `<img src="${e.target.result}" style="max-width:100%; border: 1px solid #ccc; border-radius: 4px;">`;
+            document.getElementById('displayCustomer').innerText = name;
+            document.getElementById('displayAmount').innerText = amount;
+            
+            const element = document.getElementById('invoiceContent');
+            element.style.display = 'block';
+            
+            setTimeout(() => {
+                html2pdf().from(element).save('Amit_Travels_Invoice.pdf');
+            }, 500);
+        }
+        reader.readAsDataURL(file);
+    }
+</script>
+
+</body>
+</html>
