@@ -6,39 +6,39 @@
     <title>Amit Travels - Official Invoice</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 20px; }
-        .invoice-container { max-width: 650px; margin: auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.1); border: 2px solid #0b2545; }
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 10px; }
+        .invoice-container { max-width: 600px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); border: 2px solid #0b2545; }
         .header { text-align: center; }
-        .logo-img { max-width: 140px; display: block; margin: 0 auto 5px auto; }
-        .tagline { font-size: 13px; color: #555; margin: 0; font-style: italic; }
-        .secure-badge { background-color: #e2f0d9; color: #385723; padding: 5px 10px; font-size: 12px; font-weight: bold; display: inline-block; border-radius: 4px; margin-top: 8px; }
-        .details-section, .table-section { margin-top: 15px; width: 100%; border-collapse: collapse; }
-        .details-section td { padding: 6px 0; font-size: 14px; }
-        .table-section th, .table-section td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 14px; }
+        .logo-img { max-width: 100px; display: block; margin: 0 auto 2px auto; }
+        .tagline { font-size: 11px; color: #555; margin: 0; font-style: italic; }
+        .secure-badge { background-color: #e2f0d9; color: #385723; padding: 3px 8px; font-size: 10px; font-weight: bold; display: inline-block; border-radius: 4px; margin-top: 4px; }
+        
+        .details-section, .table-section { margin-top: 10px; width: 100%; border-collapse: collapse; }
+        .details-section td { padding: 4px 0; font-size: 12px; }
+        .table-section th, .table-section td { border: 1px solid #ddd; padding: 6px 8px; text-align: left; font-size: 12px; }
         .table-section th { background-color: #0b2545; color: white; }
         .text-right { text-align: right; }
         
-        .terms-section { margin-top: 20px; font-size: 11px; color: #444; background: #f9f9f9; padding: 10px; border-radius: 4px; border: 1px dashed #ccc; }
-        .terms-section h4 { margin: 0 0 5px 0; color: #0b2545; font-size: 12px; }
-        .terms-section ul { margin: 0; padding-left: 15px; }
+        .terms-section { margin-top: 10px; font-size: 10px; color: #444; background: #f9f9f9; padding: 8px; border-radius: 4px; border: 1px dashed #ccc; }
+        .terms-section h4 { margin: 0 0 3px 0; color: #0b2545; font-size: 11px; }
+        .terms-section ul { margin: 0; padding-left: 12px; }
 
-        .signature-container { margin-top: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
-        .signature-box { text-align: center; width: 220px; }
-        .stamp-container { position: relative; display: inline-block; width: 120px; height: 60px; margin-bottom: 5px; }
+        .signature-container { margin-top: 15px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .signature-box { text-align: center; width: 200px; }
+        .stamp-container { position: relative; display: inline-block; width: 100px; height: 50px; margin-bottom: 2px; }
         .stamp-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; z-index: 2; pointer-events: none; opacity: 0.9; }
-        .sig-preview { position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); max-width: 100px; max-height: 40px; z-index: 1; }
+        .sig-preview { position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); max-width: 80px; max-height: 35px; z-index: 1; }
 
-        .form-group { margin-bottom: 12px; }
-        label { display: block; margin-bottom: 4px; font-weight: bold; font-size: 13px; }
-        input { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        .form-group { margin-bottom: 10px; }
+        label { display: block; margin-bottom: 3px; font-weight: bold; font-size: 12px; }
+        input { width: 100%; padding: 6px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
         
         /* Web Canvas Styling */
-        .canvas-box { border: 2px dashed #0b2545; background: #fff; cursor: crosshair; touch-action: none; border-radius: 4px; display: block; margin: 5px auto; }
-        .input-form { max-width: 650px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        button { background-color: #0b2545; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 10px; }
+        .canvas-box { border: 2px dashed #0b2545; background: #fff; cursor: crosshair; touch-action: none; border-radius: 4px; display: block; margin: 3px auto; }
+        .input-form { max-width: 600px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        button { background-color: #0b2545; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer; width: 100%; font-size: 14px; margin-top: 8px; }
         button:hover { background-color: #153e75; }
-        .clear-btn { background-color: #d9534f; padding: 6px; font-size: 12px; margin-top: 5px; }
-        .clear-btn:hover { background-color: #c9302c; }
+        .clear-btn { background-color: #d9534f; padding: 4px; font-size: 11px; margin-top: 3px; width: auto; }
     </style>
 </head>
 <body>
@@ -76,15 +76,15 @@
     </div>
     
     <!-- DIGITAL SIGNATURE PADS -->
-    <div class="form-group">
+    <div class="form-group" style="text-align: center;">
         <label>Customer Digital Sign (Draw below):</label>
-        <canvas id="customerCanvas" class="canvas-box" width="280" height="100"></canvas>
+        <canvas id="customerCanvas" class="canvas-box" width="260" height="80"></canvas>
         <button type="button" class="clear-btn" onclick="clearCanvas('customerCanvas')">Clear Customer Sign</button>
     </div>
 
-    <div class="form-group">
+    <div class="form-group" style="text-align: center;">
         <label>Agent Digital Sign (Draw below):</label>
-        <canvas id="agentCanvas" class="canvas-box" width="280" height="100"></canvas>
+        <canvas id="agentCanvas" class="canvas-box" width="260" height="80"></canvas>
         <button type="button" class="clear-btn" onclick="clearCanvas('agentCanvas')">Clear Agent Sign</button>
     </div>
 
@@ -95,12 +95,12 @@
 <div id="invoiceContent" class="invoice-container" style="display:none;">
     <div class="header">
         <img src="https://i.postimg.cc/wMfhXSfN/5CE560C2-E873-4D33-A158-D3D3A449753B.png" alt="Amit Travels Logo" class="logo-img">
-        <h2 style="margin: 5px 0; color: #0b2545;">AMIT TRAVELS</h2>
+        <h3 style="margin: 3px 0; color: #0b2545;">AMIT TRAVELS</h3>
         <p class="tagline">Travel More, Live More</p>
         <div><span class="secure-badge">100% Safe & Secure Booking</span></div>
     </div>
 
-    <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
+    <hr style="margin: 10px 0; border: 0; border-top: 1px solid #ddd;">
 
     <table class="details-section">
         <tr>
@@ -144,10 +144,10 @@
     <!-- SIGNATURE SECTION -->
     <div class="signature-container">
         <div class="signature-box">
-            <div style="height: 60px; display: flex; align-items: flex-end; justify-content: center; border-bottom: 1px solid #333; margin-bottom: 5px;">
-                <img id="dispCustSign" src="" style="max-height: 55px; max-width: 100%; display:none;" alt="Customer Signature">
+            <div style="height: 50px; display: flex; align-items: flex-end; justify-content: center; border-bottom: 1px solid #333; margin-bottom: 3px;">
+                <img id="dispCustSign" src="" style="max-height: 45px; max-width: 100%; display:none;" alt="Customer Signature">
             </div>
-            <p style="margin: 0; font-size: 12px; font-weight: bold;">Customer Signature</p>
+            <p style="margin: 0; font-size: 11px; font-weight: bold;">Customer Signature</p>
         </div>
         
         <div class="signature-box">
@@ -158,8 +158,8 @@
                 <img src="https://i.postimg.cc/8CmwFnSj/IMG-0732.png" class="stamp-img" alt="Amit Travels Stamp">
             </div>
             <div style="border-top: 1px solid #333; margin-top: 2px;"></div>
-            <p style="margin: 2px 0 0 0; font-size: 12px; font-weight: bold;">Authorized Signature</p>
-            <p style="margin: 2px 0 0 0; font-size: 10px; color: #555;">Amit Travels</p>
+            <p style="margin: 2px 0 0 0; font-size: 11px; font-weight: bold;">Authorized Signature</p>
+            <p style="margin: 1px 0 0 0; font-size: 9px; color: #555;">Amit Travels</p>
         </div>
     </div>
 </div>
@@ -230,7 +230,7 @@
         let total = document.getElementById('totalFee').value;
 
         if(!date || !name || !mobile || !pnr || !tPrice || !sFee) {
-            alert("Please fill all the details (Date, Name, Mobile, PNR, and Prices) properly!");
+            alert("Please fill all the details properly!");
             return;
         }
 
@@ -242,7 +242,6 @@
         document.getElementById('dispServiceFee').innerText = sFee;
         document.getElementById('dispTotalFee').innerText = total;
 
-        // Get Signatures from Canvases
         let custCanvas = document.getElementById('customerCanvas');
         let agentCanvas = document.getElementById('agentCanvas');
         
@@ -257,10 +256,10 @@
         element.style.display = 'block';
 
         let opt = {
-            margin:       0.5,
+            margin:       0.3,
             filename:     'Amit_Travels_Invoice.pdf',
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2 },
+            html2canvas:  { scale: 2, useCORS: true },
             jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
 
