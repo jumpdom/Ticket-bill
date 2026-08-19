@@ -23,16 +23,22 @@
         .terms-section ul { margin: 0; padding-left: 15px; }
 
         .signature-container { margin-top: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
-        .signature-box { text-align: center; width: 200px; }
-        .sig-line { border-bottom: 1px solid #333; height: 40px; margin-bottom: 5px; display: flex; align-items: center; justify-content: center; }
-        .sig-img { max-height: 35px; max-width: 120px; }
+        .signature-box { text-align: center; width: 220px; }
+        .stamp-container { position: relative; display: inline-block; width: 120px; height: 60px; margin-bottom: 5px; }
+        .stamp-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; z-index: 2; pointer-events: none; opacity: 0.9; }
+        .sig-preview { position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); max-width: 100px; max-height: 40px; z-index: 1; }
 
         .form-group { margin-bottom: 12px; }
         label { display: block; margin-bottom: 4px; font-weight: bold; font-size: 13px; }
         input { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        
+        /* Web Canvas Styling */
+        .canvas-box { border: 2px dashed #0b2545; background: #fff; cursor: crosshair; touch-action: none; border-radius: 4px; display: block; margin: 5px auto; }
         .input-form { max-width: 650px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
         button { background-color: #0b2545; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 10px; }
         button:hover { background-color: #153e75; }
+        .clear-btn { background-color: #d9534f; padding: 6px; font-size: 12px; margin-top: 5px; }
+        .clear-btn:hover { background-color: #c9302c; }
     </style>
 </head>
 <body>
@@ -68,10 +74,20 @@
         <label>Total Amount (₹):</label>
         <input type="number" id="totalFee" readonly style="background-color: #e9ecef; font-weight: bold;">
     </div>
+    
+    <!-- DIGITAL SIGNATURE PADS -->
     <div class="form-group">
-        <label>Upload Authorized Signature (Optional):</label>
-        <input type="file" id="sigInput" accept="image/*">
+        <label>Customer Digital Sign (Draw below):</label>
+        <canvas id="customerCanvas" class="canvas-box" width="280" height="100"></canvas>
+        <button type="button" class="clear-btn" onclick="clearCanvas('customerCanvas')">Clear Customer Sign</button>
     </div>
+
+    <div class="form-group">
+        <label>Agent Digital Sign (Draw below):</label>
+        <canvas id="agentCanvas" class="canvas-box" width="280" height="100"></canvas>
+        <button type="button" class="clear-btn" onclick="clearCanvas('agentCanvas')">Clear Agent Sign</button>
+    </div>
+
     <button onclick="generatePDF()">Generate & Download PDF Bill</button>
 </div>
 
@@ -128,18 +144,76 @@
     <!-- SIGNATURE SECTION -->
     <div class="signature-container">
         <div class="signature-box">
-            <div class="sig-line"></div>
+            <div style="height: 60px; display: flex; align-items: flex-end; justify-content: center; border-bottom: 1px solid #333; margin-bottom: 5px;">
+                <img id="dispCustSign" src="" style="max-height: 55px; max-width: 100%; display:none;" alt="Customer Signature">
+            </div>
             <p style="margin: 0; font-size: 12px; font-weight: bold;">Customer Signature</p>
         </div>
+        
         <div class="signature-box">
-            <div class="sig-line" id="sigDisplayArea"></div>
-            <p style="margin: 0; font-size: 12px; font-weight: bold;">Authorized Signature</p>
+            <div class="stamp-container">
+                <!-- Agent signature behind the stamp -->
+                <img id="dispAgentSign" src="" class="sig-preview" alt="Agent Signature">
+                <!-- Agency Mohar/Stamp on top -->
+                <img src="https://i.postimg.cc/8CmwFnSj/IMG-0732.png" class="stamp-img" alt="Amit Travels Stamp">
+            </div>
+            <div style="border-top: 1px solid #333; margin-top: 2px;"></div>
+            <p style="margin: 2px 0 0 0; font-size: 12px; font-weight: bold;">Authorized Signature</p>
             <p style="margin: 2px 0 0 0; font-size: 10px; color: #555;">Amit Travels</p>
         </div>
     </div>
 </div>
 
 <script>
+    // Setup Canvas for Digital Signatures
+    function setupCanvas(canvasId) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext('2d');
+        let painting = false;
+
+        function startPosition(e) {
+            painting = true;
+            draw(e);
+        }
+        function endPosition() {
+            painting = false;
+            ctx.beginPath();
+        }
+        function draw(e) {
+            if (!painting) return;
+            e.preventDefault();
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#000';
+
+            const rect = canvas.getBoundingClientRect();
+            let x = (e.clientX || e.touches[0].clientX) - rect.left;
+            let y = (e.clientY || e.touches[0].clientY) - rect.top;
+
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+
+        canvas.addEventListener('mousedown', startPosition);
+        canvas.addEventListener('mouseup', endPosition);
+        canvas.addEventListener('mousemove', draw);
+
+        canvas.addEventListener('touchstart', startPosition);
+        canvas.addEventListener('touchend', endPosition);
+        canvas.addEventListener('touchmove', draw);
+    }
+
+    setupCanvas('customerCanvas');
+    setupCanvas('agentCanvas');
+
+    function clearCanvas(canvasId) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
     function calculateTotal() {
         let tPrice = parseFloat(document.getElementById('ticketPrice').value) || 0;
         let sFee = parseFloat(document.getElementById('serviceFee').value) || 0;
@@ -154,7 +228,6 @@
         let tPrice = document.getElementById('ticketPrice').value;
         let sFee = document.getElementById('serviceFee').value;
         let total = document.getElementById('totalFee').value;
-        let sigFile = document.getElementById('sigInput').files[0];
 
         if(!date || !name || !mobile || !pnr || !tPrice || !sFee) {
             alert("Please fill all the details (Date, Name, Mobile, PNR, and Prices) properly!");
@@ -169,34 +242,31 @@
         document.getElementById('dispServiceFee').innerText = sFee;
         document.getElementById('dispTotalFee').innerText = total;
 
+        // Get Signatures from Canvases
+        let custCanvas = document.getElementById('customerCanvas');
+        let agentCanvas = document.getElementById('agentCanvas');
+        
+        let custImg = document.getElementById('dispCustSign');
+        custImg.src = custCanvas.toDataURL();
+        custImg.style.display = 'block';
+
+        let agentImg = document.getElementById('dispAgentSign');
+        agentImg.src = agentCanvas.toDataURL();
+
         let element = document.getElementById('invoiceContent');
+        element.style.display = 'block';
 
-        function renderAndSave() {
-            element.style.display = 'block';
-            let opt = {
-                margin:       0.5,
-                filename:     'Amit_Travels_Invoice.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-            };
+        let opt = {
+            margin:       0.5,
+            filename:     'Amit_Travels_Invoice.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
 
-            html2pdf().set(opt).from(element).save().then(() => {
-                element.style.display = 'none';
-            });
-        }
-
-        if (sigFile) {
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('sigDisplayArea').innerHTML = `<img src="${e.target.result}" class="sig-img" alt="Signature">`;
-                renderAndSave();
-            }
-            reader.readAsDataURL(sigFile);
-        } else {
-            document.getElementById('sigDisplayArea').innerHTML = "";
-            renderAndSave();
-        }
+        html2pdf().set(opt).from(element).save().then(() => {
+            element.style.display = 'none';
+        });
     }
 </script>
 
