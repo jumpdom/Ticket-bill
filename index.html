@@ -10,12 +10,12 @@
         .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
         h2 { text-align: center; color: #333; }
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; }
-        input[type="file"], input[type="number"], input[type="text"] { width: 100%; padding: 8px; box-sizing: border-box; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="file"], input[type="number"], input[type="text"] { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
         .invoice-box { border: 2px solid #0b2545; padding: 20px; margin-top: 20px; display: none; background: #fff; }
-        .logo-img { max-width: 120px; display: block; margin: 0 auto 10px auto; }
-        button { background-color: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px; }
-        button:hover { background-color: #218838; }
+        .logo-img { max-width: 150px; display: block; margin: 0 auto 10px auto; }
+        button { background-color: #0b2545; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 10px; }
+        button:hover { background-color: #153e75; }
     </style>
 </head>
 <body>
@@ -24,7 +24,7 @@
     <h2>Amit Travels Invoice Generator</h2>
     
     <div class="form-group">
-        <label>Upload Cropped Ticket Image:</label>
+        <label>Upload Ticket Image:</label>
         <input type="file" id="imageInput" accept="image/*">
     </div>
     
@@ -38,11 +38,11 @@
         <input type="number" id="finalAmount" placeholder="Enter total amount">
     </div>
 
-    <button onclick="generateInvoice()">Create Invoice & Download PDF</button>
+    <button onclick="generateInvoice()">Generate & Download PDF</button>
 
     <div id="invoiceContent" class="invoice-box">
-        <!-- Aapka asli logo yahan automatically lag jayega -->
-        <img src="image.png" alt="Amit Travels Logo" class="logo-img">
+        <!-- Logo Link -->
+        <img src="https://i.postimg.cc/nVjvWYVQ/5CE560C2-E873-4D33-A158-D3D3A449753B.png" alt="Amit Travels Logo" class="logo-img">
         <h3 style="text-align:center; margin: 5px 0; color: #0b2545;">AMIT TRAVELS</h3>
         <p style="text-align:center; font-size: 12px; color: #555; margin-top:0;">Travel More, Live More</p>
         <hr>
@@ -74,9 +74,15 @@
             const element = document.getElementById('invoiceContent');
             element.style.display = 'block';
             
-            setTimeout(() => {
-                html2pdf().from(element).save('Amit_Travels_Invoice.pdf');
-            }, 500);
+            const opt = {
+                margin: 0.5,
+                filename: 'Amit_Travels_Invoice.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(element).save();
         }
         reader.readAsDataURL(file);
     }
