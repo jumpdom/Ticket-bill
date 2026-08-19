@@ -24,9 +24,9 @@
 
         .signature-container { margin-top: 15px; display: flex; justify-content: space-between; align-items: flex-end; }
         .signature-box { text-align: center; width: 200px; }
-        .stamp-container { position: relative; display: inline-block; width: 100px; height: 50px; margin-bottom: 2px; }
+        .stamp-container { position: relative; display: inline-block; width: 110px; height: 55px; margin-bottom: 2px; }
         .stamp-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; z-index: 2; pointer-events: none; opacity: 0.9; }
-        .sig-preview { position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); max-width: 80px; max-height: 35px; z-index: 1; }
+        .sig-preview { position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); max-width: 85px; max-height: 38px; z-index: 1; }
 
         .form-group { margin-bottom: 10px; }
         label { display: block; margin-bottom: 3px; font-weight: bold; font-size: 12px; }
@@ -38,7 +38,6 @@
         button:hover { background-color: #153e75; }
         .clear-btn { background-color: #d9534f; padding: 4px; font-size: 11px; margin-top: 3px; width: auto; }
 
-        /* Print Settings to fit everything strictly on 1 Page */
         @media print {
             body { background: white; padding: 0; }
             .input-form { display: none; }
@@ -160,8 +159,8 @@
             <div class="stamp-container">
                 <!-- Agent signature behind the stamp -->
                 <img id="dispAgentSign" src="" class="sig-preview" alt="Agent Signature">
-                <!-- Agency Mohar/Stamp on top -->
-                <img src="https://i.postimg.cc/8CmwFnSj/IMG-0732.png" class="stamp-img" alt="Amit Travels Stamp">
+                <!-- Updated Agency Mohar/Stamp (IMG_0737.png) on top -->
+                <img src="IMG_0737.png" class="stamp-img" alt="Amit Travels Stamp">
             </div>
             <div style="border-top: 1px solid #333; margin-top: 2px;"></div>
             <p style="margin: 2px 0 0 0; font-size: 11px; font-weight: bold;">Authorized Signature</p>
@@ -227,7 +226,7 @@
 
     function printInvoice() {
         let date = document.getElementById('billDate').value;
-        let name = document.getElementById('custName.value') || document.getElementById('custName').value;
+        let name = document.getElementById('custName').value;
         let mobile = document.getElementById('custMobile').value;
         let pnr = document.getElementById('pnrNumber').value;
         let tPrice = document.getElementById('ticketPrice').value;
@@ -244,7 +243,7 @@
         document.getElementById('dispMobile').innerText = mobile;
         document.getElementById('dispPnr').innerText = pnr;
         document.getElementById('dispTicketPrice').innerText = tPrice;
-        document.getElementById('dispServiceFee').innerText, document.getElementById('dispServiceFee').innerText = sFee;
+        document.getElementById('dispServiceFee').innerText = sFee;
         document.getElementById('dispTotalFee').innerText = total;
 
         let custCanvas = document.getElementById('customerCanvas');
@@ -260,7 +259,6 @@
         let element = document.getElementById('invoiceContent');
         element.style.display = 'block';
 
-        // Trigger native print dialog (Select "Save as PDF" in mobile/PC print menu)
         window.print();
 
         setTimeout(() => {
