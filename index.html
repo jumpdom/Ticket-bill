@@ -24,7 +24,8 @@
 
         .signature-container { margin-top: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
         .signature-box { text-align: center; width: 200px; }
-        .sig-line { border-bottom: 1px solid #333; height: 35px; margin-bottom: 5px; }
+        .sig-line { border-bottom: 1px solid #333; height: 40px; margin-bottom: 5px; display: flex; align-items: center; justify-content: center; }
+        .sig-img { max-height: 35px; max-width: 120px; }
 
         .form-group { margin-bottom: 12px; }
         label { display: block; margin-bottom: 4px; font-weight: bold; font-size: 13px; }
@@ -67,13 +68,17 @@
         <label>Total Amount (₹):</label>
         <input type="number" id="totalFee" readonly style="background-color: #e9ecef; font-weight: bold;">
     </div>
+    <div class="form-group">
+        <label>Upload Authorized Signature (Optional):</label>
+        <input type="file" id="sigInput" accept="image/*">
+    </div>
     <button onclick="generatePDF()">Generate & Download PDF Bill</button>
 </div>
 
 <!-- PRINTABLE INVOICE TEMPLATE -->
 <div id="invoiceContent" class="invoice-container" style="display:none;">
     <div class="header">
-        <img src="https://i.postimg.cc/nVjvWYVQ/5CE560C2-E873-4D33-A158-D3D3A449753B.png" alt="Amit Travels Logo" class="logo-img">
+        <img src="https://i.postimg.cc/wMfhXSfN/5CE560C2-E873-4D33-A158-D3D3A449753B.png" alt="Amit Travels Logo" class="logo-img">
         <h2 style="margin: 5px 0; color: #0b2545;">AMIT TRAVELS</h2>
         <p class="tagline">Travel More, Live More</p>
         <div><span class="secure-badge">100% Safe & Secure Booking</span></div>
@@ -127,7 +132,7 @@
             <p style="margin: 0; font-size: 12px; font-weight: bold;">Customer Signature</p>
         </div>
         <div class="signature-box">
-            <div class="sig-line"></div>
+            <div class="sig-line" id="sigDisplayArea"></div>
             <p style="margin: 0; font-size: 12px; font-weight: bold;">Authorized Signature</p>
             <p style="margin: 2px 0 0 0; font-size: 10px; color: #555;">Amit Travels</p>
         </div>
@@ -149,6 +154,7 @@
         let tPrice = document.getElementById('ticketPrice').value;
         let sFee = document.getElementById('serviceFee').value;
         let total = document.getElementById('totalFee').value;
+        let sigFile = document.getElementById('sigInput').files[0];
 
         if(!date || !name || !mobile || !pnr || !tPrice || !sFee) {
             alert("Please fill all the details (Date, Name, Mobile, PNR, and Prices) properly!");
@@ -164,19 +170,33 @@
         document.getElementById('dispTotalFee').innerText = total;
 
         let element = document.getElementById('invoiceContent');
-        element.style.display = 'block';
 
-        let opt = {
-            margin:       0.5,
-            filename:     'Amit_Travels_Invoice.pdf',
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2 },
-            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-        };
+        function renderAndSave() {
+            element.style.display = 'block';
+            let opt = {
+                margin:       0.5,
+                filename:     'Amit_Travels_Invoice.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
 
-        html2pdf().set(opt).from(element).save().then(() => {
-            element.style.display = 'none';
-        });
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.style.display = 'none';
+            });
+        }
+
+        if (sigFile) {
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('sigDisplayArea').innerHTML = `<img src="${e.target.result}" class="sig-img" alt="Signature">`;
+                renderAndSave();
+            }
+            reader.readAsDataURL(sigFile);
+        } else {
+            document.getElementById('sigDisplayArea').innerHTML = "";
+            renderAndSave();
+        }
     }
 </script>
 
